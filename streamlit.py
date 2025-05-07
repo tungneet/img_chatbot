@@ -137,7 +137,7 @@ with st.sidebar:
 # ================
 # Main App
 # ================
-st.title("💬 Medical Chat Assistant")
+st.title("⚕️ IMG Counselor")
 st.markdown("---")
 
 # Check API connection before showing content
