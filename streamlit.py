@@ -4,7 +4,7 @@ import json
 
 # Set page config with light red background
 st.set_page_config(
-    page_title="Chat Assistant",
+    page_title="Medical Chat Assistant",
     page_icon="💬",
     layout="wide"
 )
@@ -19,8 +19,16 @@ st.markdown(
     .stButton>button {
         background-color: #ffcdd2;
         color: #d32f2f;
+        border: 1px solid #d32f2f;
+    }
+    .stButton>button:hover {
+        background-color: #ef9a9a;
+        color: #ffffff;
     }
     .stTextInput>div>div>input {
+        background-color: #ffffff;
+    }
+    .stTextArea>div>div>textarea {
         background-color: #ffffff;
     }
     </style>
@@ -28,100 +36,157 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# API configuration - Updated with your endpoint
+# API configuration - Replace with your actual endpoint
 API_BASE_URL = "https://xzi0jposzj.execute-api.ap-south-1.amazonaws.com/development"
-
-# App title
-st.title("💬 Medical Chat Assistant")
-st.markdown("---")
 
 # Initialize session state
 if 'current_user' not in st.session_state:
     st.session_state.current_user = "user_1234"
+if 'api_connected' not in st.session_state:
+    st.session_state.api_connected = False
 
-# Error handling decorator
-def handle_api_errors(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except requests.exceptions.ConnectionError:
-            st.error("🔌 Connection failed. Please check: \n1. Your internet connection\n2. API URL is correct\n3. API is running")
-            return None
-        except Exception as e:
-            st.error(f"⚠️ An error occurred: {str(e)}")
-            return None
-    return wrapper
+# ======================
+# API Connection Handler
+# ======================
+def test_api_connection():
+    try:
+        response = requests.get(
+            f"{API_BASE_URL}/get-active-users",
+            timeout=5
+        )
+        if response.status_code == 200:
+            st.session_state.api_connected = True
+            return True
+    except Exception as e:
+        st.session_state.api_connected = False
+        return False
+    return False
 
-# API functions with error handling
-@handle_api_errors
+# ================
+# API Functions
+# ================
 def chat_with_assistant(user_id, question):
-    response = requests.post(
-        f"{API_BASE_URL}/chat",
-        json={"user_id": user_id, "question": question},
-        timeout=10  # 10 second timeout
-    )
-    response.raise_for_status()
-    return response.json()
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/chat",
+            json={"user_id": user_id, "question": question},
+            timeout=15
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        st.error(f"API Error: {str(e)}")
+        return None
 
-@handle_api_errors
 def get_chat_history(user_id):
-    response = requests.get(
-        f"{API_BASE_URL}/get-history/{user_id}",
-        timeout=10
-    )
-    response.raise_for_status()
-    return response.json()
+    try:
+        response = requests.get(
+            f"{API_BASE_URL}/get-history/{user_id}",
+            timeout=10
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        st.error(f"API Error: {str(e)}")
+        return None
 
-@handle_api_errors
 def change_user(current, new):
-    response = requests.post(
-        f"{API_BASE_URL}/change-user",
-        json={"current_user_id": current, "new_user_id": new},
-        timeout=10
-    )
-    response.raise_for_status()
-    return response.json()
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/change-user",
+            json={"current_user_id": current, "new_user_id": new},
+            timeout=10
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        st.error(f"API Error: {str(e)}")
+        return None
 
-@handle_api_errors
 def get_active_users():
-    response = requests.get(
-        f"{API_BASE_URL}/get-active-users",
-        timeout=10
-    )
-    response.raise_for_status()
-    return response.json()
+    try:
+        response = requests.get(
+            f"{API_BASE_URL}/get-active-users",
+            timeout=10
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        st.error(f"API Error: {str(e)}")
+        return None
+
+# ================
+# Sidebar Config
+# ================
+with st.sidebar:
+    st.markdown("## 🔧 Configuration")
+    st.markdown(f"**API Endpoint:**  \n`{API_BASE_URL}`")
+    st.markdown(f"**Current User:**  \n`{st.session_state.current_user}`")
+    
+    if st.button("🔄 Test API Connection", help="Verify connection to backend API"):
+        if test_api_connection():
+            st.success("✅ API Connection Successful")
+        else:
+            st.error("❌ Connection Failed - Check:")
+            st.markdown("""
+            - API URL is correct  
+            - CORS is configured  
+            - API is running  
+            - Network connectivity
+            """)
+
+# ================
+# Main App
+# ================
+st.title("💬 Medical Chat Assistant")
+st.markdown("---")
+
+# Check API connection before showing content
+if not st.session_state.api_connected:
+    st.warning("⚠️ Please test API connection in the sidebar first")
+    st.stop()
 
 # Tab layout
 tab1, tab2, tab3 = st.tabs(["Chat", "User Management", "History"])
 
 with tab1:
-    st.header("Chat with Assistant")
-    question = st.text_area("Ask your question:", height=100, key="question_input")
+    st.header("Chat with Medical Assistant")
+    question = st.text_area(
+        "Enter your medical question:", 
+        height=150,
+        placeholder="Type your question here..."
+    )
     
-    if st.button("Get Answer"):
+    if st.button("Get Answer", type="primary"):
         if question:
-            with st.spinner("Consulting with the assistant..."):
+            with st.spinner("Consulting with the medical assistant..."):
                 result = chat_with_assistant(st.session_state.current_user, question)
             
             if result and "answer" in result:
-                st.success(result["answer"])
+                st.success("### Medical Advice")
+                st.markdown(result["answer"])
             elif result and "error" in result:
-                st.error(result["error"])
+                st.error(f"Error: {result['error']}")
         else:
-            st.warning("Please enter a question")
+            st.warning("Please enter a medical question")
 
 with tab2:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Change User")
-        new_user = st.text_input("New User ID", "user_5678", key="new_user_input")
+        st.subheader("Switch User")
+        new_user = st.text_input(
+            "Enter new user ID", 
+            value="user_5678",
+            help="Enter the ID of the user you want to switch to"
+        )
         
-        if st.button("Switch User"):
+        if st.button("Change User"):
             result = change_user(st.session_state.current_user, new_user)
             if result and "message" in result:
                 st.session_state.current_user = new_user
-                st.success(result["message"])
+                st.success(f"Successfully switched to: {new_user}")
+                st.rerun()  # Refresh to show new user context
             elif result and "error" in result:
                 st.error(result["error"])
 
@@ -130,26 +195,28 @@ with tab2:
         if st.button("Refresh User List"):
             result = get_active_users()
             if result and "active_users" in result:
-                st.write("**Active Users:**")
-                for user in result["active_users"]:
-                    st.write(f"- {user}")
+                if result["active_users"]:
+                    st.markdown("### Currently Active Users:")
+                    for user in result["active_users"]:
+                        st.markdown(f"- `{user}`")
+                else:
+                    st.info("No active users found")
             elif result and "error" in result:
                 st.error(result["error"])
 
 with tab3:
-    st.header("Chat History")
+    st.header("Chat History Review")
+    st.caption(f"Viewing history for: {st.session_state.current_user}")
     
     if st.button("Load My History"):
         result = get_chat_history(st.session_state.current_user)
         if result and "chats" in result:
-            for title, chat in result["chats"].items():
-                with st.expander(title):
-                    st.markdown(f"**Question:** {chat['question']}")
-                    st.markdown(f"**Answer:** {chat['answer']}")
+            if result["chats"]:
+                for title, chat in result["chats"].items():
+                    with st.expander(f"🗒️ {title}"):
+                        st.markdown(f"**Question:**  \n{chat['question']}")
+                        st.markdown(f"**Answer:**  \n{chat['answer']}")
+            else:
+                st.info("No chat history found for this user")
         elif result and "error" in result:
             st.error(result["error"])
-
-# Current user display
-st.sidebar.markdown(f"### Current User: `{st.session_state.current_user}`")
-st.sidebar.markdown("---")
-st.sidebar.markdown(f"**API Endpoint:**\n`{API_BASE_URL}`")
