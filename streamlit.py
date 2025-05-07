@@ -29,10 +29,10 @@ st.markdown(
 )
 
 # API configuration
-API_BASE_URL = st.sidebar.text_input("API Base URL", "https://your-api-id.execute-api.region.amazonaws.com")
+API_BASE_URL = st.sidebar.text_input("API Base URL", "https://xzi0jposzj.execute-api.ap-south-1.amazonaws.com/development")
 
-# Curl commands for reference
-st.sidebar.markdown("### cURL Commands")
+
+# Update the curl commands in the sidebar to match
 st.sidebar.code("""
 # Chat Endpoint
 curl -X POST {}/chat \\
@@ -52,7 +52,7 @@ curl -X GET {}/get-active-users
 """.format(API_BASE_URL, API_BASE_URL, API_BASE_URL, API_BASE_URL))
 
 # App title
-st.title("💬 Chat Assistant")
+st.title("💬 IMG Counsellor")
 st.markdown("---")
 
 # Initialize session state
