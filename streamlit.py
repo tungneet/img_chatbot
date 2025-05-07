@@ -175,7 +175,7 @@ with tab2:
     with col1:
         st.subheader("Switch User")
         new_user = st.text_input(
-            "Enter new user ID", 
+            "Enter new user ID (Enter a unique ID of 6-7 letters and remember to fetch the history later):", 
             value="user_5678",
             help="Enter the ID of the user you want to switch to"
         )
