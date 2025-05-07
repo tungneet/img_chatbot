@@ -4,8 +4,8 @@ import json
 
 # Set page config with light red background
 st.set_page_config(
-    page_title="Medical Chat Assistant",
-    page_icon="💬",
+    page_title="IMG Counselor",
+    page_icon="⚕️",
     layout="wide"
 )
 
@@ -120,7 +120,6 @@ def get_active_users():
 # ================
 with st.sidebar:
     st.markdown("## 🔧 Configuration")
-    st.markdown(f"**API Endpoint:**  \n`{API_BASE_URL}`")
     st.markdown(f"**Current User:**  \n`{st.session_state.current_user}`")
     
     if st.button("🔄 Test API Connection", help="Verify connection to backend API"):
@@ -150,9 +149,9 @@ if not st.session_state.api_connected:
 tab1, tab2, tab3 = st.tabs(["Chat", "User Management", "History"])
 
 with tab1:
-    st.header("Chat with Medical Assistant")
+    st.header("Chat with your IMG Counselor")
     question = st.text_area(
-        "Enter your medical question:", 
+        "Please enter your question:", 
         height=150,
         placeholder="Type your question here..."
     )
@@ -203,7 +202,7 @@ with tab2:
                     st.info("No active users found")
             elif result and "error" in result:
                 st.error(result["error"])
-
+ 
 with tab3:
     st.header("Chat History Review")
     st.caption(f"Viewing history for: {st.session_state.current_user}")
