@@ -219,4 +219,4 @@ with tab3:
             else:
                 st.info("No chat history found for this user")
         elif result and "error" in result:
-            st.error(result["error"])
+            st.error(result["error"]) 
