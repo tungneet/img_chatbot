@@ -150,43 +150,56 @@ if not st.session_state.api_connected:
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Chat", "User Management", "History", "Rate Answer", "Contact Us"])
 
 with tab1:
-    st.header("Chat with your IMG Counselor")
-    question = st.text_area("Please enter your question:", height=150, placeholder="Type your question here...")
+    st.header("🧠 Chat with Assistant")
 
-    if st.button("Get Answer", type="primary"):
-        if question:
-            with st.spinner("Getting everything ready for you, one moment!"):
-                result = chat_with_assistant(st.session_state.current_user, question)
+    if st.session_state.current_user is None:
+        st.warning("Please select or create a user to start chatting.")
+    else:
+        question = st.text_area("Ask a question:", height=100, key="chat_question")
 
-            if result and "answer" in result:
-                st.success("### Here’s the info:")
-                st.markdown(result["answer"])
-                
-                # Store last Q&A for inline rating
-                st.session_state.last_question = question
-                st.session_state.last_answer = result["answer"]
+        if st.button("Send", key="chat_submit"):
+            if not question.strip():
+                st.warning("Please enter a question.")
+            else:
+                with st.spinner("Thinking..."):
+                    result = chat_with_assistant(st.session_state.current_user, question)
 
-                # Inline rating section
-                st.markdown("#### Rate this answer:")
-                rating = st.slider("Rating:", 0, 5, 3, format="%d ⭐", key="rating_slider")
-                suggestion = st.text_area("Suggestions or comments?", height=100, key="inline_suggestion")
+                if result and "answer" in result:
+                    st.success("### Here’s the info:")
+                    st.markdown(result["answer"])
 
-                if st.button("Submit Rating", key="inline_rating_button"):
-                    rating_response = rate_answer(
+                    # Store Q&A for feedback
+                    st.session_state.last_question = question
+                    st.session_state.last_response = result["answer"]
+                    st.session_state.rating_submitted = False  # Reset state for new response
+
+                elif result and "error" in result:
+                    st.error(result["error"])
+
+        # If there's a response, allow rating and suggestions
+        if st.session_state.last_response:
+            st.markdown("---")
+            st.markdown("#### Last Response:")
+            st.markdown(st.session_state.last_response)
+
+            if not st.session_state.rating_submitted:
+                st.markdown("#### Rate this response:")
+                rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
+                suggestion = st.text_area("Any suggestions to improve?", height=100, key="chat_suggestion")
+
+                if st.button("Submit Rating", key="chat_rating_submit"):
+                    response = rate_answer(
                         st.session_state.current_user,
                         st.session_state.last_question,
                         rating,
                         suggestion if suggestion.strip() else None
                     )
-                    if rating_response and "message" in rating_response:
-                        st.success(rating_response["message"])
-                    elif rating_response and "error" in rating_response:
-                        st.error(rating_response["error"])
+                    if response and "message" in response:
+                        st.success("✅ Rating received. We appreciate your feedback!")
+                        st.session_state.rating_submitted = True
+                    elif response and "error" in response:
+                        st.error(response["error"])
 
-            elif result and "error" in result:
-                st.error(f"Error: {result['error']}")
-        else:
-            st.warning("Please enter your question.")
 with tab2:
     col1, col2 = st.columns(2)
     with col1:
