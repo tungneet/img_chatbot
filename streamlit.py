@@ -187,40 +187,36 @@ with tab1:
                 elif result and "error" in result:
                     st.error(result["error"])
 
-        # Rating and suggestions after response
-        if not st.session_state.rating_submitted:
+        # Rating and suggestion input after response
+        if st.session_state.last_response:
+            st.markdown("---")
             st.markdown("#### Rate this response:")
-            rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
-            if st.button("Submit Rating", key="rating_submit"):
-                response = rate_answer(
-                    st.session_state.current_user,
-                    st.session_state.last_question,
-                    rating
-                )
-                if response and "message" in response:
-                    st.success("Rating submitted. We appreciate your feedback! 🙂")
-                    st.session_state.rating_submitted = True
-                elif response and "error" in response:
-                    st.error(response["error"])
 
-        # Allow users to submit suggestions after rating
-        if not st.session_state.suggestion_submitted:
+            # Rating slider
+            rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
+
+            # Suggestion input
             suggestion = st.text_area("Any suggestions to improve?", height=100, key="chat_suggestion")
-            if st.button("Submit Suggestion", key="suggestion_submit"):
-                if suggestion.strip():
+
+            # Unified button to submit both rating and suggestion
+            if st.button("Submit Feedback", key="submit_feedback"):
+                if rating is not None:
                     response = rate_answer(
                         st.session_state.current_user,
                         st.session_state.last_question,
-                        rating=None,
-                        suggestion=suggestion.strip()
+                        rating,
+                        suggestion.strip() if suggestion.strip() else None  # Optional suggestion
                     )
+
                     if response and "message" in response:
-                        st.success("Your valuable suggestion has been received. We appreciate your feedback! 🙂")
-                        st.session_state.suggestion_submitted = True
+                        st.success("Rating and suggestion submitted. We appreciate your feedback! 🙂")
+                        st.session_state.rating_submitted = True
+                        st.session_state.suggestion_submitted = True  # Mark suggestion as submitted
                     elif response and "error" in response:
                         st.error(response["error"])
                 else:
-                    st.warning("Please write a suggestion before submitting.")
+                    st.warning("Please provide a rating before submitting.")
+
 
 
 with tab2:
