@@ -125,11 +125,11 @@ with st.sidebar:
     st.markdown("## Configuration")
     st.markdown(f"**Current User:**  \n`{st.session_state.current_user}`")
 
-    if st.button("\ud83d\udd04 Test API Connection", help="Verify connection to backend API"):
+    if st.button(" Test API Connection", help="Verify connection to backend API"):
         if test_api_connection():
             st.success("\u2705 API Connection Successful")
         else:
-            st.error("\u274c Connection Failed - Check:")
+            st.error(" Connection Failed - Check:")
             st.markdown("""
             - API URL is correct  
             - CORS is configured  
@@ -140,11 +140,11 @@ with st.sidebar:
 # ================
 # Main App
 # ================
-st.title("\u2695\ufe0f IMG Counselor")
+st.title(" IMG Counselor")
 st.markdown("---")
 
 if not st.session_state.api_connected:
-    st.warning("\u26a0\ufe0f Please test API connection in the sidebar first")
+    st.warning(" Please test API connection in the sidebar first")
     st.stop()
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Chat", "User Management", "History", "Rate Answer", "Contact Us"])
@@ -200,7 +200,7 @@ with tab3:
         if result and "chats" in result:
             if result["chats"]:
                 for title, chat in result["chats"].items():
-                    with st.expander(f"\ud83d\uddd2\ufe0f {title}"):
+                    with st.expander(f" {title}"):
                         st.markdown(f"**Question:**  \n{chat['question']}")
                         st.markdown(f"**Answer:**  \n{chat['answer']}")
             else:
@@ -209,7 +209,7 @@ with tab3:
             st.error(result["error"])
 
 with tab4:
-    st.header("\ud83c\udf1f Rate the Answer")
+    st.header(" Rate the Answer")
     if 'last_question' in st.session_state:
         rating = st.slider("How would you rate the last answer?", 1, 5, 3)
         suggestion = st.text_area("Any suggestions? (Optional)", height=100)
@@ -223,7 +223,7 @@ with tab4:
         st.info("Ask a question in the Chat tab to rate an answer.")
 
 with tab5:
-    st.header("\ud83d\udce9 Contact Us")
+    st.header(" Contact Us")
     contact_msg = st.text_area("Enter your message:", height=150, placeholder="Describe your issue or suggestion...")
     if st.button("Submit Message"):
         if contact_msg:
