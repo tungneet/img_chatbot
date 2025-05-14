@@ -188,7 +188,7 @@ with tab1:
 
             if not st.session_state.rating_submitted:
                 st.markdown("#### Rate this response:")
-                rating = st.slider("Your rating (0-5 stars):", 0, 1, 4, 5, 3, key="chat_rating")
+                rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
                 suggestion = st.text_area("Any suggestions to improve?", height=100, key="chat_suggestion")
 
                 if st.button("Submit Rating", key="chat_rating_submit"):
