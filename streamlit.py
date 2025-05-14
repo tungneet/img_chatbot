@@ -154,7 +154,8 @@ if not st.session_state.api_connected:
 tab1, tab2, tab3, tab5 = st.tabs(["Chat", "User Management", "History", "Contact Us"])
 
 with tab1:
-    st.header("🧠 Chat with Assistant")
+    st.header("Search for IMG related Info")
+    st.caption(f"Chatting as: {st.session_state.current_user}")
 
     if st.session_state.current_user is None:
         st.warning("Please select or create a user to start chatting.")
@@ -196,7 +197,7 @@ with tab1:
             rating = st.slider("Rate the response (0-5 stars):", 0, 5, 3, key="chat_rating")
 
             # Suggestion input
-            suggestion = st.text_area("Any suggestions to improve, response?(optional)", height=100, key="chat_suggestion")
+            suggestion = st.text_area("Any suggestions to improve above response? (optional)", height=100, key="chat_suggestion")
 
             # Unified button to submit both rating and suggestion
             if st.button("Submit Feedback", key="submit_feedback"):
