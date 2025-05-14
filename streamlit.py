@@ -157,7 +157,7 @@ with tab1:
             with st.spinner("Getting everything ready for you, one moment!"):
                 result = chat_with_assistant(st.session_state.current_user, question)
             if result and "answer" in result:
-                st.success("###Here’s the info:")
+                st.success("### Here’s the info:")
                 st.markdown(result["answer"])
                 st.session_state.last_question = question  # Store last question for rating tab
             elif result and "error" in result:
