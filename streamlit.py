@@ -194,7 +194,7 @@ with tab1:
         if not st.session_state.rating_submitted:
             st.markdown("#### Rate this response:")
             rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
-            if st.button("Submit Rating", key="Rating received. We appreciate your feedback! 🙂"):
+            if st.button("Submit Rating", key="Rating received. We appreciate your feedback! 🙂 "):
                 response = rate_answer(
                     st.session_state.current_user,
                     st.session_state.last_question,
