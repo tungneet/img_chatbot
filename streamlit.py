@@ -101,14 +101,22 @@ def get_active_users():
         st.error(f"API Error: {str(e)}")
         return None
 
-def submit_contact_message(user_id, message):
+def submit_contact_message(name, email, message):
     try:
-        response = requests.post(f"{API_BASE_URL}/contact-us", json={"user_id": user_id, "message": message}, timeout=10)
+        response = requests.post(
+            f"{API_BASE_URL}/contact-us",
+            json={
+                "name": name,
+                "email": email,
+                "message": message
+            },
+            timeout=10
+        )
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        st.error(f"API Error: {str(e)}")
-        return None
+        return {"error": str(e)}
+
 
 def rate_answer(user_id, question, rating, suggestion=None):
     try:
@@ -264,14 +272,19 @@ with tab3:
             st.error(result["error"])
 
 with tab5:
-    st.header(" Contact Us")
+    st.header("Contact Us")
+
+    name = st.text_input("Your Name")
+    email = st.text_input("Your Email")
     contact_msg = st.text_area("Enter your message:", height=150, placeholder="Describe your issue or suggestion...")
+
     if st.button("Submit Message"):
-        if contact_msg:
-            result = submit_contact_message(st.session_state.current_user, contact_msg)
+        if name and email and contact_msg:
+            result = submit_contact_message(name, email, contact_msg)
             if result and "message" in result:
                 st.success("Your message was submitted successfully. We'll get back to you soon.")
             elif result and "error" in result:
                 st.error(result["error"])
         else:
-            st.warning("Please enter a message before submitting")
+            st.warning("Please fill out all fields before submitting.")
+
