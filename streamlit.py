@@ -186,23 +186,37 @@ with tab1:
             st.markdown("#### Last Response:")
             st.markdown(st.session_state.last_response)
 
-            if not st.session_state.rating_submitted:
-                st.markdown("#### Rate this response:")
-                rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
-                suggestion = st.text_area("Any suggestions to improve?", height=100, key="chat_suggestion")
+        if not st.session_state.rating_submitted:
+            st.markdown("#### Rate this response:")
+            rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
+            if st.button("Submit Rating Only", key="rating_only_submit"):
+                response = rate_answer(
+                    st.session_state.current_user,
+                    st.session_state.last_question,
+                    rating
+                )
+                if response and "message" in response:
+                    st.success("✅ Rating submitted. Thank you!")
+                    st.session_state.rating_submitted = True
+                elif response and "error" in response:
+                    st.error(response["error"])
 
-                if st.button("Submit Rating", key="chat_rating_submit"):
+            suggestion = st.text_area("Any suggestions to improve?", height=100, key="chat_suggestion")
+            if st.button("Submit Suggestion Only", key="suggestion_only_submit"):
+                if suggestion.strip():
                     response = rate_answer(
                         st.session_state.current_user,
                         st.session_state.last_question,
-                        rating,
-                        suggestion if suggestion.strip() else None
+                        rating=None,
+                        suggestion=suggestion.strip()
                     )
                     if response and "message" in response:
-                        st.success("✅ Rating received. We appreciate your feedback!")
-                        st.session_state.rating_submitted = True
+                        st.success("✅ Suggestion submitted. Thank you!")
                     elif response and "error" in response:
                         st.error(response["error"])
+                else:
+                    st.warning("Please write a suggestion before submitting.")
+
 
 with tab2:
     col1, col2 = st.columns(2)
