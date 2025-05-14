@@ -44,6 +44,10 @@ if 'current_user' not in st.session_state:
     st.session_state.current_user = "user_1234"
 if 'api_connected' not in st.session_state:
     st.session_state.api_connected = False
+if 'rating_submitted' not in st.session_state:
+    st.session_state.rating_submitted = False
+if 'last_response' not in st.session_state:
+    st.session_state.last_response = None
 
 # ======================
 # API Connection Handler
