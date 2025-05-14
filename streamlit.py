@@ -122,7 +122,7 @@ def rate_answer(user_id, question, rating, suggestion=None):
 # Sidebar Config
 # ================
 with st.sidebar:
-    st.markdown("## \ud83d\udd27 Configuration")
+    st.markdown("## Configuration")
     st.markdown(f"**Current User:**  \n`{st.session_state.current_user}`")
 
     if st.button("\ud83d\udd04 Test API Connection", help="Verify connection to backend API"):
