@@ -152,19 +152,41 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["Chat", "User Management", "History", "R
 with tab1:
     st.header("Chat with your IMG Counselor")
     question = st.text_area("Please enter your question:", height=150, placeholder="Type your question here...")
+
     if st.button("Get Answer", type="primary"):
         if question:
             with st.spinner("Getting everything ready for you, one moment!"):
                 result = chat_with_assistant(st.session_state.current_user, question)
+
             if result and "answer" in result:
                 st.success("### Here’s the info:")
                 st.markdown(result["answer"])
-                st.session_state.last_question = question  # Store last question for rating tab
+                
+                # Store last Q&A for inline rating
+                st.session_state.last_question = question
+                st.session_state.last_answer = result["answer"]
+
+                # Inline rating section
+                st.markdown("#### Rate this answer:")
+                rating = st.slider("Rating:", 0, 5, 3, format="%d ⭐", key="rating_slider")
+                suggestion = st.text_area("Suggestions or comments?", height=100, key="inline_suggestion")
+
+                if st.button("Submit Rating", key="inline_rating_button"):
+                    rating_response = rate_answer(
+                        st.session_state.current_user,
+                        st.session_state.last_question,
+                        rating,
+                        suggestion if suggestion.strip() else None
+                    )
+                    if rating_response and "message" in rating_response:
+                        st.success(rating_response["message"])
+                    elif rating_response and "error" in rating_response:
+                        st.error(rating_response["error"])
+
             elif result and "error" in result:
                 st.error(f"Error: {result['error']}")
         else:
-            st.warning("Please enter your question")
-
+            st.warning("Please enter your question.")
 with tab2:
     col1, col2 = st.columns(2)
     with col1:
