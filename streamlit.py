@@ -194,7 +194,7 @@ with tab1:
         if not st.session_state.rating_submitted:
             st.markdown("#### Rate this response:")
             rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
-            if st.button("Submit Rating Only", key="rating_only_submit"):
+            if st.button("Submit Rating", key="Rating received. We appreciate your feedback! 🙂"):
                 response = rate_answer(
                     st.session_state.current_user,
                     st.session_state.last_question,
@@ -207,7 +207,7 @@ with tab1:
                     st.error(response["error"])
 
             suggestion = st.text_area("Any suggestions to improve?", height=100, key="chat_suggestion")
-            if st.button("Submit Suggestion Only", key="suggestion_only_submit"):
+            if st.button("Submit Suggestion", key=" Your valuable suggestion has been received. We appreciate your feedback! 🙂"):
                 if suggestion.strip():
                     response = rate_answer(
                         st.session_state.current_user,
