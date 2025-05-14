@@ -270,7 +270,7 @@ with tab5:
         if contact_msg:
             result = submit_contact_message(st.session_state.current_user, contact_msg)
             if result and "message" in result:
-                st.success(result["message"])
+                st.success("Your message was submitted successfully. We'll get back to you soon.")
             elif result and "error" in result:
                 st.error(result["error"])
         else:
