@@ -170,11 +170,16 @@ with tab1:
 
                 if result and "answer" in result:
                     st.success("### Here’s the info:")
-                    st.markdown(result["answer"])
 
-                    # Store Q&A for feedback
+                    # ✅ Remove duplicate lines before display
+                    unique_lines = list(dict.fromkeys(result["answer"].splitlines()))
+                    cleaned_answer = "\n".join(unique_lines)
+
+                    st.markdown(cleaned_answer)
+
+                    # Store cleaned answer for feedback
                     st.session_state.last_question = question
-                    st.session_state.last_response = result["answer"]
+                    st.session_state.last_response = cleaned_answer
                     st.session_state.rating_submitted = False  # Reset state for new response
 
                 elif result and "error" in result:
