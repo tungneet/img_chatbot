@@ -151,7 +151,7 @@ if not st.session_state.api_connected:
     st.warning(" Please test API connection in the sidebar first")
     st.stop()
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["Chat", "User Management", "History", "Rate Answer", "Contact Us"])
+tab1, tab2, tab3, tab5 = st.tabs(["Chat", "User Management", "History", "Contact Us"])
 
 with tab1:
     st.header("🧠 Chat with Assistant")
@@ -187,12 +187,7 @@ with tab1:
                 elif result and "error" in result:
                     st.error(result["error"])
 
-        # If there's a response, allow rating and suggestions
-        if st.session_state.last_response:
-            st.markdown("---")
-            st.markdown("#### Last Response:")
-            st.markdown(st.session_state.last_response)
-
+        # Rating and suggestions after response
         if not st.session_state.rating_submitted:
             st.markdown("#### Rate this response:")
             rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
@@ -270,20 +265,6 @@ with tab3:
                 st.info("No chat history found for this user")
         elif result and "error" in result:
             st.error(result["error"])
-
-with tab4:
-    st.header(" Rate the Answer")
-    if 'last_question' in st.session_state:
-        rating = st.slider("How would you rate the last answer?", 1, 5, 3)
-        suggestion = st.text_area("Any suggestions? (Optional)", height=100)
-        if st.button("Submit Rating"):
-            result = rate_answer(st.session_state.current_user, st.session_state.last_question, rating, suggestion)
-            if result and "message" in result:
-                st.success(result["message"])
-            elif result and "error" in result:
-                st.error(result["error"])
-    else:
-        st.info("Ask a question in the Chat tab to rate an answer.")
 
 with tab5:
     st.header(" Contact Us")
