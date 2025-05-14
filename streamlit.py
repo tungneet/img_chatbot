@@ -194,20 +194,20 @@ with tab1:
         if not st.session_state.rating_submitted:
             st.markdown("#### Rate this response:")
             rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
-            if st.button("Submit Rating", key="Rating received. We appreciate your feedback! 🙂 "):
+            if st.button("Submit Rating", key="rating_submit"):
                 response = rate_answer(
                     st.session_state.current_user,
                     st.session_state.last_question,
                     rating
                 )
                 if response and "message" in response:
-                    st.success("✅ Rating submitted. Thank you!")
+                    st.success("Rating submitted. We appreciate your feedback! 🙂")
                     st.session_state.rating_submitted = True
                 elif response and "error" in response:
                     st.error(response["error"])
 
             suggestion = st.text_area("Any suggestions to improve?", height=100, key="chat_suggestion")
-            if st.button("Submit Suggestion", key=" Your valuable suggestion has been received. We appreciate your feedback! 🙂"):
+            if st.button("Submit Suggestion", key="suggestion_submit"):
                 if suggestion.strip():
                     response = rate_answer(
                         st.session_state.current_user,
@@ -216,7 +216,7 @@ with tab1:
                         suggestion=suggestion.strip()
                     )
                     if response and "message" in response:
-                        st.success("✅ Suggestion submitted. Thank you!")
+                        st.success("Your valuable suggestion has been received. We appreciate your feedback! 🙂")
                     elif response and "error" in response:
                         st.error(response["error"])
                 else:
