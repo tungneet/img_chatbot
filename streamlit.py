@@ -193,10 +193,10 @@ with tab1:
             st.markdown("#### Rate this response:")
 
             # Rating slider
-            rating = st.slider("Your rating (0-5 stars):", 0, 5, 3, key="chat_rating")
+            rating = st.slider("Rate the response (0-5 stars):", 0, 5, 3, key="chat_rating")
 
             # Suggestion input
-            suggestion = st.text_area("Any suggestions to improve?", height=100, key="chat_suggestion")
+            suggestion = st.text_area("Any suggestions to improve, response?(optional)", height=100, key="chat_suggestion")
 
             # Unified button to submit both rating and suggestion
             if st.button("Submit Feedback", key="submit_feedback"):
