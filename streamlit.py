@@ -154,16 +154,16 @@ with tab1:
     question = st.text_area("Please enter your question:", height=150, placeholder="Type your question here...")
     if st.button("Get Answer", type="primary"):
         if question:
-            with st.spinner("Consulting with the medical assistant..."):
+            with st.spinner("Getting everything ready for you, one moment!"):
                 result = chat_with_assistant(st.session_state.current_user, question)
             if result and "answer" in result:
-                st.success("### Medical Advice")
+                st.success("###Here’s the info:")
                 st.markdown(result["answer"])
                 st.session_state.last_question = question  # Store last question for rating tab
             elif result and "error" in result:
                 st.error(f"Error: {result['error']}")
         else:
-            st.warning("Please enter a medical question")
+            st.warning("Please enter your question")
 
 with tab2:
     col1, col2 = st.columns(2)
