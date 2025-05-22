@@ -83,6 +83,22 @@ def get_chat_history(user_id):
         st.error(f"API Error: {str(e)}")
         return None
 
+def get_faqs_from_history(user_id, last_5_qas):
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/faqs",
+            json={
+                "user_id": user_id,
+                "chat_history": last_5_qas
+            },
+            timeout=10
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        st.error(f"API Error while fetching FAQs: {str(e)}")
+        return None
+
 def change_user(current, new):
     try:
         response = requests.post(f"{API_BASE_URL}/change-user", json={"current_user_id": current, "new_user_id": new}, timeout=10)
@@ -180,51 +196,52 @@ with tab1:
                 if result and "answer" in result:
                     st.success("### Here’s the info:")
 
-                    # ✅ Remove duplicate lines before display
+                    # Remove duplicate lines
                     unique_lines = list(dict.fromkeys(result["answer"].splitlines()))
                     cleaned_answer = "\n".join(unique_lines)
 
-                    # Display the cleaned answer
+                    # Display answer
                     st.markdown(cleaned_answer)
 
-                    # Store cleaned answer for feedback
+                    # Store for feedback
                     st.session_state.last_question = question
                     st.session_state.last_response = cleaned_answer
-                    st.session_state.rating_submitted = False  # Reset state for new response
-                    st.session_state.suggestion_submitted = False  # Reset suggestion state
+                    st.session_state.rating_submitted = False
+                    st.session_state.suggestion_submitted = False
 
                 elif result and "error" in result:
                     st.error(result["error"])
 
-        # Rating and suggestion input after response
-        if st.session_state.last_response:
+        # Show feedback UI if a response exists
+        if st.session_state.get("last_response"):
             st.markdown("---")
             st.markdown("#### Rate this response:")
 
-            # Rating slider
             rating = st.slider("Rate the response (0-5 stars):", 0, 5, 3, key="chat_rating")
+            suggestion = st.text_area(
+                "Any suggestions to improve above response? (optional)",
+                height=100,
+                key="chat_suggestion"
+            )
 
-            # Suggestion input
-            suggestion = st.text_area("Any suggestions to improve above response? (optional)", height=100, key="chat_suggestion")
-
-            # Unified button to submit both rating and suggestion
             if st.button("Submit Feedback", key="submit_feedback"):
                 if rating is not None:
                     response = rate_answer(
                         st.session_state.current_user,
                         st.session_state.last_question,
                         rating,
-                        suggestion.strip() if suggestion.strip() else None  # Optional suggestion
+                        suggestion.strip() if suggestion.strip() else None
                     )
 
                     if response and "message" in response:
                         st.success("Rating and suggestion submitted. We appreciate your feedback! 🙂")
                         st.session_state.rating_submitted = True
-                        st.session_state.suggestion_submitted = True  # Mark suggestion as submitted
+                        st.session_state.suggestion_submitted = True
                     elif response and "error" in response:
                         st.error(response["error"])
                 else:
                     st.warning("Please provide a rating before submitting.")
+
 
 
 
