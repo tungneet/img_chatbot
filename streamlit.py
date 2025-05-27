@@ -153,9 +153,9 @@ with st.sidebar:
     st.markdown("## Configuration")
     st.markdown(f"**Current User:**  \n`{st.session_state.current_user}`")
 
-    if st.button(" Test API Connection", help="Verify connection to backend API"):
+    if st.button(" Plug it in", help="Connect to Assistant"):
         if test_api_connection():
-            st.success("\u2705 API Connection Successful")
+            st.success("\u2705 Successfully connected")
         else:
             st.error(" Connection Failed - Check:")
             st.markdown("""
@@ -241,9 +241,6 @@ with tab1:
                         st.error(response["error"])
                 else:
                     st.warning("Please provide a rating before submitting.")
-
-
-
 
 with tab2:
     col1, col2 = st.columns(2)
