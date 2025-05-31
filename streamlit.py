@@ -67,7 +67,7 @@ def test_api_connection():
 # ================
 def chat_with_assistant(user_id, question):
     try:
-        response = requests.post(f"{API_BASE_URL}/chat", json={"user_id": user_id, "question": question}, timeout=15)
+        response = requests.post(f"{API_BASE_URL}/chat", json={"user_id": user_id, "question": question}, timeout=30)
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
